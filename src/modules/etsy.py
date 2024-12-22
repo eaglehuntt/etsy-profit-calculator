@@ -18,7 +18,7 @@ class Etsy:
         df = pd.concat(map(pd.read_csv, joined_list), ignore_index=True) 
         return df
 
-    def get_net_profit_total(self):
+    def get_yearly_net_profit_total(self):
        net_profit_total = 0
        
        for i in range(12):
@@ -27,6 +27,9 @@ class Etsy:
        return net_profit_total
     
     def get_net_profit_by_month(self, month:int):
+
+        if month > 12 or month < 1:
+            raise ValueError("Month must be between 1 and 12")
 
         # Get all transactions from specified month
         month_net_profit = self.data[self.data["Date"].str.contains(self.months[month - 1])]["Net"]
