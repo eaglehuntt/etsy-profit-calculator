@@ -2,7 +2,7 @@ import os
 import glob 
 import pandas as pd
 
-class Printful:
+class Calculator:
     def __init__(self) -> None:
         self.data = self.load_data()
         self.months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"]
@@ -23,7 +23,7 @@ class Printful:
 
         return expenses
     
-    def get_yearly_total_expenses(self):
+    def get_yearly_expense_total(self):
         total_expenses = 0
         
         for i in range(12):

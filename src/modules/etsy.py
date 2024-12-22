@@ -2,7 +2,7 @@ import os
 import glob 
 import pandas as pd
 
-class Etsy:
+class Calculator:
     def __init__(self):
         self.data = self.load_data()
         self.months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"]
