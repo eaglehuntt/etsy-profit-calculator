@@ -4,7 +4,9 @@ import pandas as pd
 
 class Calculator:
     def __init__(self) -> None:
-        self.data = self.load_data()
+        unsafe_data = self.load_data()
+        self.data = self.sanitize_data(unsafe_data)
+
         self.months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"]
         
     def load_data(self):
@@ -23,6 +25,23 @@ class Calculator:
 
         return expenses
     
+    def sanitize_data(self, data):
+        
+        sanitized_data = data.copy()
+
+        sanitized_data.loc[:, "Order"] = sanitized_data.loc[:, "Order"].str.replace("Order ", "")
+        sanitized_data.loc[:, "Order"] = sanitized_data.loc[:, "Order"].str.replace("Refund to wallet ", "")
+
+        # Replace all $ with nothing and convert data from string to float
+
+        sanitized_data.loc[:, "Total"] = sanitized_data.loc[:, "Total"].str.replace("[$]", "", regex=True).astype(float)
+
+        sanitized_data.loc[:, "Products"] = sanitized_data.loc[:, "Products"].str.replace("[$]", "", regex=True).astype(float)
+
+        sanitized_data.loc[:, "Shipping"] = sanitized_data.loc[:, "Shipping"].str.replace("[$]", "", regex=True).astype(float)
+
+        return sanitized_data
+    
     def get_yearly_expense_total(self):
         total_expenses = 0
         
@@ -37,15 +56,9 @@ class Calculator:
         
         month_expenses = self.data[self.data["Date"].str.contains(self.months[month - 1])]["Total"]
 
-        # Replace all $ with nothing
-        month_expenses = month_expenses.str.replace("[$]", "", regex=True)
-
-        # Convert the data type from string to float
-        month_expenses = month_expenses.astype(float)
-
         # Calcluate the net profit by getting the sum of all entries in the net column
         return month_expenses.sum()
     
 # USAGE:
-# printful = Printful()
-# print(printful.get_yearly_total_expenses())
+# printful = Calculator()
+# print(printful.get_yearly_expense_total())
