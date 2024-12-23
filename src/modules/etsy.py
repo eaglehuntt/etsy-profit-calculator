@@ -22,6 +22,8 @@ class Calculator:
     def sanitize_data(self, data):
         sanitized_data = data.copy()
 
+        sanitized_data.loc[:, "Info"] = sanitized_data.loc[:, "Info"].str.replace("Order #", "")
+
         # Replace the -- with a pandas NA
         sanitized_data["Net"] = sanitized_data["Net"].replace("--", pd.NA)
 
