@@ -4,7 +4,8 @@ import pandas as pd
 
 class Calculator:
     def __init__(self):
-        self.data = self.load_data()
+        unsafe_data = self.load_data()
+        self.data = self.sanitize_data(unsafe_data)
         self.months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"]
 
     def load_data(self):
@@ -17,6 +18,23 @@ class Calculator:
         # Use the joined list to make a data frame of all data
         df = pd.concat(map(pd.read_csv, joined_list), ignore_index=True) 
         return df
+    
+    def sanitize_data(self, data):
+        sanitized_data = data.copy()
+
+        # Replace the -- with a pandas NA
+        sanitized_data["Net"] = sanitized_data["Net"].replace("--", pd.NA)
+
+        # Replace all $ with nothing
+        sanitized_data["Net"] = sanitized_data["Net"].str.replace("[$]", "", regex=True)
+
+        # Fill the pandas NA with 0s
+        sanitized_data["Net"] = sanitized_data["Net"].fillna(0)
+
+        # Convert the data type from string to float
+        sanitized_data["Net"] = sanitized_data["Net"].astype(float)
+        
+        return sanitized_data
 
     def get_yearly_net_profit_total(self):
        net_profit_total = 0
@@ -34,21 +52,9 @@ class Calculator:
         # Get all transactions from specified month
         month_net_profit = self.data[self.data["Date"].str.contains(self.months[month - 1])]["Net"]
 
-        # Replace the -- with a pandas NA
-        month_net_profit = month_net_profit.replace("--", pd.NA)
-
-        # Replace all $ with nothing
-        month_net_profit = month_net_profit.str.replace("[$]", "", regex=True)
-
-        # Fill the pandas NA with 0s
-        month_net_profit = month_net_profit.fillna(0)
-
-        # Convert the data type from string to float
-        month_net_profit = month_net_profit.astype(float)
-
         # Calcluate the net profit by getting the sum of all entries in the net column
         return month_net_profit.sum()
 
 # USAGE: 
-# etsy = Etsy()
-# print(etsy.get_net_profit_total())
+# etsy = Calculator()
+# print(etsy.get_yearly_net_profit_total())
