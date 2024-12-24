@@ -1,5 +1,6 @@
 import os
 import glob 
+import re
 import pandas as pd
 
 class Calculator:
@@ -24,6 +25,11 @@ class Calculator:
 
         sanitized_data.loc[:, "Info"] = sanitized_data.loc[:, "Info"].str.replace("Order #", "")
 
+        condition = sanitized_data['Info'].isna() | sanitized_data['Info'].str.match(r"Funds will be available on .*", na=False)
+        sanitized_data.loc[condition, 'Info'] = sanitized_data.loc[condition, 'Title']
+
+        sanitized_data.loc[:, "Info"] = sanitized_data.loc[:, "Info"].str.replace("Payment for Order #", "")
+
         # Replace the -- with a pandas NA
         sanitized_data["Net"] = sanitized_data["Net"].replace("--", pd.NA)
 
@@ -35,6 +41,17 @@ class Calculator:
 
         # Convert the data type from string to float
         sanitized_data["Net"] = sanitized_data["Net"].astype(float)
+
+
+        sanitized_data["Fees & Taxes"] = sanitized_data["Fees & Taxes"].str.replace("[$]", "", regex=True)
+        sanitized_data["Fees & Taxes"] = sanitized_data["Fees & Taxes"].replace("--", pd.NA)
+        sanitized_data["Fees & Taxes"] = sanitized_data["Fees & Taxes"].fillna(0)
+        sanitized_data["Fees & Taxes"] = sanitized_data["Fees & Taxes"].astype(float)
+        
+        sanitized_data["Amount"] = sanitized_data["Amount"].str.replace("[$]", "", regex=True)
+        sanitized_data["Amount"] = sanitized_data["Amount"].replace("--", pd.NA)
+        sanitized_data["Amount"] = sanitized_data["Amount"].fillna(0)
+        sanitized_data["Amount"] = sanitized_data["Amount"].astype(float)
         
         return sanitized_data
 
