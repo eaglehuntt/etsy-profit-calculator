@@ -86,8 +86,6 @@ class ProfitCalculator:
 
 # USAGE:
 profit_calculator = ProfitCalculator()
-profit_calculator.generate_total_profit_csv()
-# profit_calculator.generate_total_profit_csv()
 # profit_calculator.generate_total_profit_csv()
 # print(profit_calculator.get_yearly_profit())
 # print(profit_calculator.get_total_net_profit_by_month(12))
